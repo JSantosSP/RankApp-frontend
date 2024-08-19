@@ -1,13 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Button, View, Text } from 'react-native';
+import {  Button, Text } from 'react-native';
 import React, { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import TabBar from '../../Components/Base/TabBar';
 
 const HomeScreen = ({ navigation }) => {
   const [username, setUsername] = useState(null);
-
-  
 
   useFocusEffect(
     React.useCallback(() => {
@@ -25,27 +23,12 @@ const HomeScreen = ({ navigation }) => {
     }, [])
   );
 
-  const handlePage = () => {
-    navigation.navigate('Auth');
-  };
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-  });
 
   return (
-    <View style={styles.container}>
+    <TabBar navigation={navigation}>
       <Text>{username ? `Hello ${username}` : 'Home Screen'}</Text>
-      {username === null && (
-        <Button title="Go to Auth" onPress={handlePage} />
-      )}
-      <StatusBar style="auto" />
-    </View>
+      <Button title="Go to rank list" onPress={() => handlePage('rank')} />
+    </TabBar>
   );
 };
 

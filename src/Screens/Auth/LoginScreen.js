@@ -1,5 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Button, Text, View, TextInput } from 'react-native';
+import { StyleSheet, Button, Text, TextInput } from 'react-native';
 import React, { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -21,12 +20,6 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
     input: {
       height: 40,
       borderColor: 'gray',
@@ -38,7 +31,7 @@ const LoginScreen = ({ navigation }) => {
   });
 
   return (
-    <View style={styles.container}>
+    <TabBar navigation={navigation}>
       <Text>Login Screen</Text>
       
       <TextInput
@@ -48,9 +41,9 @@ const LoginScreen = ({ navigation }) => {
         onChangeText={setUsername}
       />
 
-      <Button title="Go to Home" onPress={handlePage} />
-      <StatusBar style="auto" />
-    </View>
+      <Button title="Create User" onPress={handlePage} />
+    </TabBar>
+    
   );
 };
 
