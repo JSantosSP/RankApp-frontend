@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Button, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { AntDesign } from '@expo/vector-icons';
 
 const TabBar = ({ navigation, children }) => {
-  const [activeKey, setActiveKey] = useState('home');
+  const [activeKey, setActiveKey] = useState('RankList');
 
   const handlePage = (page) => {
     setActiveKey(page);
@@ -46,14 +46,14 @@ const TabBar = ({ navigation, children }) => {
 
   const tabs = [
     {
-      key: 'Home',
-      title: 'Home',
-      icon: 'home',
-    },
-    {
       key: 'RankList',
       title: 'RankList',
       icon: 'bars',
+    },
+    {
+      key: 'Rank',
+      title: 'Rank',
+      icon: 'home',
     },
     {
       key: 'CreateRank',

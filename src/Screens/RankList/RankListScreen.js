@@ -1,5 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
@@ -39,6 +38,10 @@ const RankListScreen = ({ navigation }) => {
     }, [])
   );
 
+  const handleRankPress = (item) => {
+    navigation.navigate('Rank', { rank: item });
+  };
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -61,10 +64,14 @@ const RankListScreen = ({ navigation }) => {
       <View style={styles.container}>
         {rank.length > 0 ? (
           rank.map((item, index) => (
-            <View key={index} style={styles.card}>
+            <TouchableOpacity 
+              key={index} 
+              style={styles.card} 
+              onPress={() => handleRankPress(item)} // Al presionar, navega a RankScreen con el objeto rank correspondiente
+            >
               <Text style={styles.cardText}>Rank Name: {item.name}</Text>
               <Text style={styles.cardText}>Points: 0</Text>
-            </View>
+            </TouchableOpacity>
           ))
         ) : (
           <Text style={styles.cardText}>No ranks available</Text>
