@@ -14,7 +14,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="RankList">
+      <Stack.Navigator initialRouteName="Auth">
         <Stack.Screen name="Rank" component={RankScreen} />
         <Stack.Screen name="Auth" component={LoginScreen} />
         <Stack.Screen name="RankList" component={RankListScreen} />

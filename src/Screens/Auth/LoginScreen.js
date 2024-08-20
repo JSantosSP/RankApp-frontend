@@ -1,9 +1,26 @@
-import { StyleSheet, Button, Text, TextInput } from 'react-native';
+import { StyleSheet, View, Button, Text, TextInput } from 'react-native';
 import React, { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchUsername = async () => {
+        try {
+          const storedUsername = await AsyncStorage.getItem('@username');
+          if (storedUsername !== null) {
+            navigation.navigate('RankList');
+          }
+        } catch (e) {
+          console.error('Error al recuperar el nombre de usuario:', e);
+        }
+      };
+      fetchUsername();
+    }, [])
+  );
 
   const storeUsername = async (username) => {
     try {
@@ -16,7 +33,7 @@ const LoginScreen = ({ navigation }) => {
 
   const handlePage = async () => {
     await storeUsername(username); 
-    navigation.navigate('Home');
+    navigation.navigate('RankList');
   };
 
   const styles = StyleSheet.create({
@@ -31,7 +48,7 @@ const LoginScreen = ({ navigation }) => {
   });
 
   return (
-    <TabBar navigation={navigation}>
+    <View>
       <Text>Login Screen</Text>
       
       <TextInput
@@ -42,8 +59,7 @@ const LoginScreen = ({ navigation }) => {
       />
 
       <Button title="Create User" onPress={handlePage} />
-    </TabBar>
-    
+    </View>
   );
 };
 
