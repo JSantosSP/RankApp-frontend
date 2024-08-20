@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, TextInput, Button, TouchableOpacity, FlatList } from 'react-native';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons'; // Para los iconos en el botón flotante
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import TabBar from '../../Components/Base/TabBar';
 
 const RankScreen = ({ navigation, route }) => {
@@ -58,7 +58,7 @@ const RankScreen = ({ navigation, route }) => {
   );
 
   const handleParticipantPress = (user) => {
-    navigation.navigate('Profile', { user });
+    navigation.navigate('Profile', { user: user });
   };
 
   return (

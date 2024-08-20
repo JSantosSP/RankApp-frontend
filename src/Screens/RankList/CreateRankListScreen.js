@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, Button, Alert } from 'react-native';
 import React, { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import DateTimePicker from '@react-native-community/datetimepicker'; // Para la selección de fechas
+import DateTimePicker from '@react-native-community/datetimepicker'; 
 import { useFocusEffect } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import TabBar from '../../Components/Base/TabBar';

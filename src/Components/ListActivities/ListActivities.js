@@ -1,25 +1,46 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 
-const ListActivities = ({ onSelect, rank }) => {
+const ListActivities = ({ onSelect }) => {
   const [query, setQuery] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // Función que pedira las actividades del rank
+  // Función que generará la lista de actividades del rank (simulada aquí)
   const generateWordsList = () => {
-    return ['john_doe', 'jane_smith', 'johanna', 'jake', 'jules', 'jackson', 'julie', 'jerry', 'joyce', 'jacob'];
+    return [
+      'john_doe', 
+      'jane_smith', 
+      'johanna', 
+      'jake', 
+      'jules', 
+      'jackson', 
+      'julie', 
+      'jerry', 
+      'joyce', 
+      'jacob'
+    ];
   };
 
   const handleInputChange = (text) => {
     setQuery(text);
 
-    if (text.length >= 3) {
+    if (text.length >= 1) {
       const userList = generateWordsList();
       const matches = userList.filter(user =>
         user.toLowerCase().includes(text.toLowerCase())
-      );
-      setFilteredUsers(matches);
+      ).map(user => ({ name: user }));  // Mapear a objetos con una propiedad 'name'
+
+      if (matches.length === 0) {
+        setFilteredUsers([{ name: `"${text}" (Add new)` }]);
+      } else {
+        const exactMatch = matches.some(user => user.name.toLowerCase() === text.toLowerCase());
+        if (!exactMatch) {
+          matches.push({ name: `"${text}" (Add new)` });
+        }
+        setFilteredUsers(matches);
+      }
+
       setShowDropdown(true);
     } else {
       setFilteredUsers([]);
@@ -28,26 +49,27 @@ const ListActivities = ({ onSelect, rank }) => {
   };
 
   const handleSelect = (username) => {
-    setQuery(username);
+    const finalUsername = username.includes('(Add new)') ? query : username;
+    setQuery(finalUsername);
     setShowDropdown(false);
-    onSelect(username);
+    onSelect(finalUsername);
   };
 
   return (
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder="Type a username"
+        placeholder="Type an activity name"
         value={query}
         onChangeText={handleInputChange}
       />
       {showDropdown && (
         <FlatList
-          data={filteredUsers.length > 0 ? filteredUsers : [{ name: `"${query}" (Add new)` }]}
+          data={filteredUsers}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleSelect(item.name || query)}>
-              <Text style={styles.dropdownItem}>{item.name || `"${query}" (Add new)`}</Text>
+            <TouchableOpacity onPress={() => handleSelect(item.name)}>
+              <Text style={styles.dropdownItem}>{item.name}</Text>
             </TouchableOpacity>
           )}
           style={styles.dropdown}

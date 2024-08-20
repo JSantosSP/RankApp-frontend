@@ -7,7 +7,6 @@ import RankScreen from './src/Screens/Rank/RankScreen';
 import RankListScreen from './src/Screens/RankList/RankListScreen';
 import CreateRankListScreen from './src/Screens/RankList/CreateRankListScreen';
 import CreateActivityScreen from './src/Screens/Activity/CreateActivityScreen';
-import AssignActivityScreen from './src/Screens/Activity/AssignActivityScreen';
 import ProfileScreen from './src/Screens/Profile/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
@@ -21,7 +20,6 @@ export default function App() {
         <Stack.Screen name="RankList" component={RankListScreen} />
         <Stack.Screen name="CreateRank" component={CreateRankListScreen} />
         <Stack.Screen name="CreateActivity" component={CreateActivityScreen} />
-        <Stack.Screen name="AssignActivity" component={AssignActivityScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
       </Stack.Navigator>
     </NavigationContainer>

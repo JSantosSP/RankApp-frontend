@@ -1,9 +1,15 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { View, Text, StyleSheet, Modal, Button, TouchableOpacity, FlatList } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
 import TabBar from '../../Components/Base/TabBar';
+import ListActivities from '../../Components/ListActivities/ListActivities';
+import dayjs from 'dayjs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ProfileScreen = ({ navigation,user }) => {
-
+const ProfileScreen = ({ navigation, route }) => {
+  const { user } = route.params || {};
+  
   if (!user) {
     return (
         <TabBar navigation={navigation}>      
@@ -15,23 +21,53 @@ const ProfileScreen = ({ navigation,user }) => {
   }
 
   const [activities, setActivities] = useState([]);
-  const [newActivities, setNewActivities] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [username, setUsername] = useState(null);
 
-  const handleAddUser = () => {
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchUsername = async () => {
+        try {
+          const storedUsername = await AsyncStorage.getItem('@username');
+          if (storedUsername !== null) {
+            setUsername(storedUsername);
+          }
+        } catch (e) {
+          console.error('Error al recuperar el nombre de usuario:', e);
+        }
+      };
+      fetchUsername();
+    }, [])
+  );
+
+  const handleAddActivity = (newActivity) => {
     if (newActivity) {
-      setUserList([...activities, { name: newActivity, points: 0 }]);
-      setNewActivities('');
+      const formData = {
+        name: newActivity,
+        description: 'texto de ejemplo',
+        fecha: dayjs().format('DD-MM-YYYY'),
+        score: 10,
+        assignerUsername: username,
+      };
+      setActivities([...activities, formData]);
       setModalVisible(false);
     }
   };
 
-  const renderActivityItem = ({ item }) => (
+  const handleRemoveActivity = (index) => {
+    setActivities(activities.filter((_, i) => i !== index));
+  };
+
+  const renderActivityItem = ({ item, index }) => (
     <View style={styles.activityCard}>
       <Text style={styles.activityName}>Name: {item.name}</Text>
       <Text style={styles.activityDescription}>Description: {item.description}</Text>
       <Text style={styles.activityScore}>Score: {item.score}</Text>
+      <Text style={styles.activityDate}>Date: {item.fecha}</Text>
       <Text style={styles.activityAssigner}>Assigned by: {item.assignerUsername}</Text>
+      <TouchableOpacity style={styles.deleteButton} onPress={() => handleRemoveActivity(index)}>
+        <AntDesign name="delete" size={20} color="white" />
+      </TouchableOpacity>
     </View>
   );
 
@@ -58,10 +94,8 @@ const ProfileScreen = ({ navigation,user }) => {
         )}
         </View>
         <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
-            <AntDesign name="adduser" size={24} color="white" />
+            <AntDesign name="addfile" size={24} color="white" />
         </TouchableOpacity>
-        {/*tengo que modificar este codigo de Modal para que tenga el selector que he creado como componente y añada el nombre a la lista, tambie añadir los estilos de RankScreen*/}
-        {/*Entender porque no se esta pasando el elemento user correctamente*/}
         <Modal
             animationType="slide"
             transparent={true}
@@ -70,14 +104,8 @@ const ProfileScreen = ({ navigation,user }) => {
         >
             <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Add Participant</Text>
-                <TextInput
-                style={styles.input}
-                placeholder="Enter username"
-                value={newUsername}
-                onChangeText={setNewUsername}
-                />
-                <Button title="Add" onPress={handleAddUser} color="#002fcd" />
+                <Text style={styles.modalTitle}>Add Activity</Text>
+                <ListActivities onSelect={handleAddActivity}/>
                 <Button title="Cancel" onPress={() => setModalVisible(false)} color="#cd0000" />
             </View>
             </View>
@@ -125,6 +153,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: '#ddd',
+    position: 'relative',
   },
   activityName: {
     fontSize: 16,
@@ -140,10 +169,52 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
   },
+  activityDate: {
+    fontSize: 14,
+    color: '#333',
+  },
   activityAssigner: {
     fontSize: 14,
     color: '#007AFF',
     marginTop: 5,
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: '#cd0000',
+    padding: 5,
+    borderRadius: 5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  fab: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    backgroundColor: '#007AFF',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8,
   },
 });
 
