@@ -16,13 +16,13 @@ const RankScreen = ({ navigation, route }) => {
   }
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [newUsername, setNewUsername] = useState('');
+  const [newNickname, setNewNickname] = useState('');
   const [userList, setUserList] = useState([]);
 
   const handleAddUser = () => {
-    if (newUsername) {
-      setUserList([...userList, { name: newUsername, points: 0 }]);
-      setNewUsername('');
+    if (newNickname) {
+      setUserList([...userList, { name: newNickname, points: 0 }]);
+      setNewNickname('');
       setModalVisible(false);
     }
   };
@@ -48,7 +48,7 @@ const RankScreen = ({ navigation, route }) => {
       <Text style={styles.value}>{rank.reward || 'No reward specified'}</Text>
 
       <Text style={styles.label}>Creator:</Text>
-      <Text style={styles.value}>{rank.username}</Text>
+      <Text style={styles.value}>{rank.nickname}</Text>
 
       <Text style={styles.label}>Points:</Text>
       <Text style={styles.value}>{rank.points || 0}</Text>
@@ -102,9 +102,9 @@ const RankScreen = ({ navigation, route }) => {
             <Text style={styles.modalTitle}>Add Participant</Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter username"
-              value={newUsername}
-              onChangeText={setNewUsername}
+              placeholder="Enter nickname"
+              value={newNickname}
+              onChangeText={setNewNickname}
             />
             <Button title="Add" onPress={handleAddUser} color="#002fcd" />
             <Button title="Cancel" onPress={() => setModalVisible(false)} color="#cd0000" />

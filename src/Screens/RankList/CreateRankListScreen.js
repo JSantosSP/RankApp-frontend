@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
 import TabBar from '../../Components/Base/TabBar';
 
 const CreateRankListScreen = ({ navigation }) => {
-  const [username, setUsername] = useState(null);
+  const [nickname, setNickname] = useState(null);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [fechaIni, setFechaIni] = useState(new Date());
@@ -20,17 +20,17 @@ const CreateRankListScreen = ({ navigation }) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      const fetchUsername = async () => {
+      const fetchNickname = async () => {
         try {
-          const storedUsername = await AsyncStorage.getItem('@username');
-          if (storedUsername !== null) {
-            setUsername(storedUsername);
+          const storedNickname = await AsyncStorage.getItem('@nickname');
+          if (storedNickname !== null) {
+            setNickname(storedNickname);
           }
         } catch (e) {
           console.error('Error al recuperar el nombre de usuario:', e);
         }
       };
-      fetchUsername();
+      fetchNickname();
     }, [])
   );
 
@@ -56,7 +56,7 @@ const CreateRankListScreen = ({ navigation }) => {
       fechaIni: dayjs(fechaIni).format('DD-MM-YYYY'),
       fechaFin: dayjs(fechaFin).format('DD-MM-YYYY'),
       reward,
-      username,
+      nickname,
     };
     return JSON.stringify(formData, null, 2);
   };
@@ -178,7 +178,7 @@ const CreateRankListScreen = ({ navigation }) => {
       <Text style={styles.label}>Creator</Text>
       <TextInput
         style={styles.input}
-        value={username}
+        value={nickname}
         editable={false}
       />
 

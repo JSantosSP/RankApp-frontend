@@ -5,16 +5,16 @@ import { useFocusEffect } from '@react-navigation/native';
 import TabBar from '../../Components/Base/TabBar';
 
 const RankListScreen = ({ navigation }) => {
-  const [username, setUsername] = useState(null);
+  const [nickname, setNickname] = useState(null);
   const [rank, setRank] = useState([]);
 
   useFocusEffect(
     React.useCallback(() => {
-      const fetchUsername = async () => {
+      const fetchNickname = async () => {
         try {
-          const storedUsername = await AsyncStorage.getItem('@username');
-          if (storedUsername !== null) {
-            setUsername(storedUsername);
+          const storedNickname = await AsyncStorage.getItem('@nickname');
+          if (storedNickname !== null) {
+            setNickname(storedNickname);
           }
         } catch (e) {
           console.error('Error al recuperar el nombre de usuario:', e);
@@ -33,7 +33,7 @@ const RankListScreen = ({ navigation }) => {
         }
       };
 
-      fetchUsername();
+      fetchNickname();
       fetchRank();
     }, [])
   );

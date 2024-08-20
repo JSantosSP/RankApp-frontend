@@ -48,11 +48,11 @@ const ListActivities = ({ onSelect }) => {
     }
   };
 
-  const handleSelect = (username) => {
-    const finalUsername = username.includes('(Add new)') ? query : username;
-    setQuery(finalUsername);
+  const handleSelect = (nickname) => {
+    const finalNickname = nickname.includes('(Add new)') ? query : nickname;
+    setQuery(finalNickname);
     setShowDropdown(false);
-    onSelect(finalUsername);
+    onSelect(finalNickname);
   };
 
   return (

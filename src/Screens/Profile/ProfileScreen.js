@@ -22,21 +22,21 @@ const ProfileScreen = ({ navigation, route }) => {
 
   const [activities, setActivities] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [username, setUsername] = useState(null);
+  const [nickname, setNickname] = useState(null);
 
   useFocusEffect(
     React.useCallback(() => {
-      const fetchUsername = async () => {
+      const fetchNickname = async () => {
         try {
-          const storedUsername = await AsyncStorage.getItem('@username');
-          if (storedUsername !== null) {
-            setUsername(storedUsername);
+          const storedNickname = await AsyncStorage.getItem('@nickname');
+          if (storedNickname !== null) {
+            setNickname(storedNickname);
           }
         } catch (e) {
           console.error('Error al recuperar el nombre de usuario:', e);
         }
       };
-      fetchUsername();
+      fetchNickname();
     }, [])
   );
 
@@ -47,7 +47,7 @@ const ProfileScreen = ({ navigation, route }) => {
         description: 'texto de ejemplo',
         fecha: dayjs().format('DD-MM-YYYY'),
         score: 10,
-        assignerUsername: username,
+        assignerNickname: nickname,
       };
       setActivities([...activities, formData]);
       setModalVisible(false);
@@ -64,7 +64,7 @@ const ProfileScreen = ({ navigation, route }) => {
       <Text style={styles.activityDescription}>Description: {item.description}</Text>
       <Text style={styles.activityScore}>Score: {item.score}</Text>
       <Text style={styles.activityDate}>Date: {item.fecha}</Text>
-      <Text style={styles.activityAssigner}>Assigned by: {item.assignerUsername}</Text>
+      <Text style={styles.activityAssigner}>Assigned by: {item.assignerNickname}</Text>
       <TouchableOpacity style={styles.deleteButton} onPress={() => handleRemoveActivity(index)}>
         <AntDesign name="delete" size={20} color="white" />
       </TouchableOpacity>
@@ -75,7 +75,7 @@ const ProfileScreen = ({ navigation, route }) => {
     <TabBar navigation={navigation}>
         <View style={styles.container}>
         <Text style={styles.title}>Profile Details</Text>
-        <Text style={styles.label}>Username:</Text>
+        <Text style={styles.label}>Nickname:</Text>
         <Text style={styles.value}>{user.name}</Text>
 
         <Text style={styles.label}>Points:</Text>
