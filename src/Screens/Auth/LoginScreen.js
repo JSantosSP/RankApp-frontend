@@ -10,6 +10,7 @@ const LoginScreen = ({ navigation }) => {
     React.useCallback(() => {
       const fetchUsername = async () => {
         try {
+          //llamar a la funcion para crear el usuario en la bd
           const storedUsername = await AsyncStorage.getItem('@username');
           if (storedUsername !== null) {
             navigation.navigate('RankList');
