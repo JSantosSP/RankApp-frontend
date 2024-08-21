@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import TabBar from '../../Components/Base/TabBar';
+import api from '../../Utils/api';
+
 
 const RankListScreen = ({ navigation }) => {
   const [nickname, setNickname] = useState(null);
@@ -14,6 +16,7 @@ const RankListScreen = ({ navigation }) => {
         try {
           const storedNickname = await AsyncStorage.getItem('@nickname');
           if (storedNickname !== null) {
+            console.log(nickname)
             setNickname(storedNickname);
           }
         } catch (e) {
@@ -23,23 +26,31 @@ const RankListScreen = ({ navigation }) => {
 
       const fetchRank = async () => {
         try {
-          const storedRank = await AsyncStorage.getItem('@rank');
-          if (storedRank !== null) {
-            const updatedRank = [...rank, JSON.parse(storedRank)];
-            setRank(updatedRank);
+          const objData = { nickname: nickname };
+          const rankings = await api.get('/users/:nickname/rankings', objData);
+          
+          if (rankings.message !== "rankings not found") {         
+            setRank(rankings.data);
           }
         } catch (e) {
           console.error('Error al recuperar el rank del usuario:', e);
         }
-      };
+      };     
 
       fetchNickname();
       fetchRank();
     }, [])
   );
 
-  const handleRankPress = (item) => {
-    navigation.navigate('Rank', { rank: item });
+  const handleRankPress = async (item) => {
+    const objData = {id:item.ranking_id};
+    try{
+      const ranking = await api.get('/rankings/:id', objData)
+      navigation.navigate('Rank', { rank: ranking.data });
+    }
+    catch(error){
+      console.log(error.message)
+    }
   };
 
   const styles = StyleSheet.create({
@@ -70,7 +81,7 @@ const RankListScreen = ({ navigation }) => {
               onPress={() => handleRankPress(item)} // Al presionar, navega a RankScreen con el objeto rank correspondiente
             >
               <Text style={styles.cardText}>Rank Name: {item.name}</Text>
-              <Text style={styles.cardText}>Points: 0</Text>
+              <Text style={styles.cardText}>Points: {item.score}</Text>
             </TouchableOpacity>
           ))
         ) : (

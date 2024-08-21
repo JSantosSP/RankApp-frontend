@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, TextInput, Button, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Modal, TextInput, Alert, Button, TouchableOpacity, FlatList } from 'react-native';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import TabBar from '../../Components/Base/TabBar';
+import api from '../../Utils/api';
 
 const RankScreen = ({ navigation, route }) => {
-  const { rank } = route.params || {}; // Obtener el objeto rank de los parámetros de la ruta con el identificador
-  if (!rank) {
+  const { rank } = route.params || {}; 
+  const [rankData, setRankData] = useState(rank || {}); // Usar estado para manejar los datos del ranking
+  const [modalVisible, setModalVisible] = useState(false);
+  const [newNickname, setNewNickname] = useState('');
+
+  if (!rankData) {
     return (
       <TabBar navigation={navigation}>      
         <View style={styles.container}>
@@ -15,43 +20,45 @@ const RankScreen = ({ navigation, route }) => {
     );
   }
 
-  const [modalVisible, setModalVisible] = useState(false);
-  const [newNickname, setNewNickname] = useState('');
-  const [userList, setUserList] = useState([]);
-
-  const handleAddUser = () => {
+  const handleAddUser = async () => {
     if (newNickname) {
-      setUserList([...userList, { name: newNickname, points: 0 }]);
-      setNewNickname('');
-      setModalVisible(false);
+      const objData = {id: rankData.id, nickname: 'jose'};
+      try {
+        const res = await api.post(`/rankings/:id/users/:nickname`, objData, {nickname:newNickname});
+        if(res.message !== "nickname not found"){
+          setRankData((prevRankData) => ({
+            ...prevRankData,
+            users: res.data,
+          }));
+        }
+        else{
+          Alert.alert('Error', 'nickname not found');
+        }
+        setNewNickname('');
+        setModalVisible(false);
+      } catch (error) {
+        console.log(error.message);
+      }
     }
   };
-
-  // Crear una función que realice la llamada a la base de datos y añada a los participantes con sus puntos
 
   const renderHeader = () => (
     <View style={styles.rankDetails}>
       <Text style={styles.title}>Ranking Details</Text>
       <Text style={styles.label}>Name:</Text>
-      <Text style={styles.value}>{rank.name}</Text>
+      <Text style={styles.value}>{rankData.name}</Text>
 
       <Text style={styles.label}>Description:</Text>
-      <Text style={styles.value}>{rank.description || 'No description provided'}</Text>
+      <Text style={styles.value}>{rankData.description || 'No description provided'}</Text>
 
       <Text style={styles.label}>First Day:</Text>
-      <Text style={styles.value}>{rank.fechaIni}</Text>
+      <Text style={styles.value}>{rankData.fechaIni}</Text>
 
       <Text style={styles.label}>Last Day:</Text>
-      <Text style={styles.value}>{rank.fechaFin}</Text>
+      <Text style={styles.value}>{rankData.fechaFin}</Text>
 
       <Text style={styles.label}>Reward:</Text>
-      <Text style={styles.value}>{rank.reward || 'No reward specified'}</Text>
-
-      <Text style={styles.label}>Creator:</Text>
-      <Text style={styles.value}>{rank.nickname}</Text>
-
-      <Text style={styles.label}>Points:</Text>
-      <Text style={styles.value}>{rank.points || 0}</Text>
+      <Text style={styles.value}>{rankData.reward || 'No reward specified'}</Text>
 
       <Text style={styles.label}>Participants:</Text>
     </View>
@@ -64,15 +71,15 @@ const RankScreen = ({ navigation, route }) => {
   return (
     <TabBar navigation={navigation}>
       <FlatList
-        data={userList}
+        data={rankData.users}
         ListHeaderComponent={renderHeader}
         numColumns={1}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleParticipantPress(item)}>
             <View style={styles.participantCard}>
-              <Text style={styles.participantName}>{item.name}</Text>
-              <Text style={styles.participantPoints}>Points: {item.points}</Text>
+              <Text style={styles.participantName}>{item.usuario_nickname}</Text>
+              <Text style={styles.participantPoints}>Points: {item.score}</Text>
             </View>
           </TouchableOpacity>
         )}

@@ -6,6 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFocusEffect } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import TabBar from '../../Components/Base/TabBar';
+import api from '../../Utils/api';
 
 const CreateRankListScreen = ({ navigation }) => {
   const [nickname, setNickname] = useState(null);
@@ -52,9 +53,9 @@ const CreateRankListScreen = ({ navigation }) => {
 
     const formData = {
       name,
+      fechaIni: dayjs(fechaIni).format('YYYY-MM-DD'),
+      fechaFin: dayjs(fechaFin).format('YYYY-MM-DD'),
       description,
-      fechaIni: dayjs(fechaIni).format('DD-MM-YYYY'),
-      fechaFin: dayjs(fechaFin).format('DD-MM-YYYY'),
       reward,
       nickname,
     };
@@ -63,8 +64,7 @@ const CreateRankListScreen = ({ navigation }) => {
 
   const storeRank = async (rank) => {
     try {
-      //añadir codigo para guardar el ranking en la base de datos
-      await AsyncStorage.setItem('@rank', rank);
+      await api.post('/rankings',null,rank);
     } catch (e) {
       console.error('Error al guardar el ranking:', e);
     }
@@ -76,7 +76,6 @@ const CreateRankListScreen = ({ navigation }) => {
 
     setTimeout(async () => {
       await storeRank(newRank);
-      Alert.alert('Form Data', newRank); 
       navigation.navigate('RankList');
     }, 0);
   };

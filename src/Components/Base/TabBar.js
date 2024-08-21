@@ -93,8 +93,6 @@ const TabBar = ({ navigation, children }) => {
           </TouchableOpacity>
         ))}
       </View>
-
-      <StatusBar style="auto" />
     </View>
   );
 };
