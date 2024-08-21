@@ -1,55 +1,67 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import api from '../../Utils/api';
+import { useFocusEffect } from '@react-navigation/native';
 
 const ListActivities = ({ onSelect, route }) => {
   const { rank } = route.params || {};
   const [query, setQuery] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [activitiesList, setActivitiesList] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
   
-  const generateWordsList = async () => {
-    try {
-      const objParams = {id: rank.ranking_id}
-      const res = await api.get('activity/rankings/:id', objParams)
-      return res.data.activities
-    } catch (error) {
-      console.log(error)
-    }
-  };
+  
+  useFocusEffect(
+    React.useCallback(() => {
+      const generateWordsList = async () => {
+        try {
+          const objParams = {id: rank.ranking_id}
+          const res = await api.get('activity/rankings/:id', objParams)
+          setActivitiesList(res.data.activities)
+        } catch (error) {
+          console.log(error)
+        }
+      };
+      generateWordsList();
+    }, [])
+  );
+
 
   const handleInputChange = (text) => {
     setQuery(text);
-
+  
     if (text.length >= 1) {
-      const userList = generateWordsList();
-      const matches = userList.filter(user =>
-        user.toLowerCase().includes(text.toLowerCase())
-      ).map(user => ({ name: user }));  
+      
+      const matches = activitiesList.filter(activity =>
+        activity.name.toLowerCase().includes(text.toLowerCase())
+      );
 
-      if (matches.length === 0) {
-        setFilteredUsers([{ name: `"${text}" (Add new)` }]);
-      } else {
-        const exactMatch = matches.some(user => user.name.toLowerCase() === text.toLowerCase());
-        if (!exactMatch) {
-          matches.push({ name: `"${text}" (Add new)` });
-        }
+      if (matches.length !== 0) {
         setFilteredUsers(matches);
+      } else {
+        setFilteredUsers([]); 
       }
-
+  
       setShowDropdown(true);
     } else {
-      setFilteredUsers([]);
+      setFilteredUsers([]); 
       setShowDropdown(false);
     }
   };
 
-  const handleSelect = (nickname) => {
-    const finalNickname = nickname.includes('(Add new)') ? query : nickname;
-    setQuery(finalNickname);
-    setShowDropdown(false);
-    onSelect(finalNickname);
+  const handleSelect = async (activity) => {
+    const exists = activitiesList.some(item => item === activity);
+  
+    if (exists) {
+      onSelect(activity);
+    } else {
+      Alert.alert(
+        'Actividad no encontrada',
+        `La actividad "${activity}" no existe en la lista.`,
+        [{ text: 'OK' }]
+      );
+    }
   };
 
   return (
@@ -65,7 +77,7 @@ const ListActivities = ({ onSelect, route }) => {
           data={filteredUsers}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleSelect(item.name)}>
+            <TouchableOpacity onPress={() => handleSelect(item)}>
               <Text style={styles.dropdownItem}>{item.name}</Text>
             </TouchableOpacity>
           )}

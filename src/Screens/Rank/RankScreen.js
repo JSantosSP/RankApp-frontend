@@ -5,7 +5,7 @@ import TabBar from '../../Components/Base/TabBar';
 import api from '../../Utils/api';
 
 const RankScreen = ({ navigation, route }) => {
-  const { rank } = route.params || {}; 
+  const { rank, nickname } = route.params || {}; 
   const [rankData, setRankData] = useState(rank || {});
   const [modalVisible, setModalVisible] = useState(false);
   const [newNickname, setNewNickname] = useState('');
@@ -22,7 +22,7 @@ const RankScreen = ({ navigation, route }) => {
 
   const handleAddUser = async () => {
     if (newNickname) {
-      const objData = {id: rankData.id, nickname: 'jose'};
+      const objData = {id: rankData.id, nickname: nickname};
       try {
         const res = await api.post(`/rankings/:id/users/:nickname`, objData, {nickname:newNickname});
         if(res.message !== "nickname not found"){
@@ -64,8 +64,30 @@ const RankScreen = ({ navigation, route }) => {
     </View>
   );
 
-  const handleParticipantPress = (user) => {
-    navigation.navigate('Profile', { user: user, rank: rankData });
+  const searchData = async (user) => {
+    try {
+      const objParams = {id:rank.id, nickname: user.usuario_nickname}
+      const newData = await api.get('rankings/:id/users/:nickname/activities', objParams)
+      if (newData !== null) {
+        return newData;
+      }
+      else{
+        return {error:"error to search"}
+      }
+      
+    } catch (e) {
+      console.error('Error al recuperar el nombre de usuario:', e);
+    }
+  };
+  const handleParticipantPress = async (user) => {
+    try {
+      const data = await searchData(user);
+      const obj = { user: user, rank: rankData, dataOld: data.data, nickname: nickname }
+      navigation.navigate('Profile',obj);
+    } catch (error) {
+      console.error('Error obteniendo los datos:', error);
+      
+    }
   };
 
   return (
@@ -93,7 +115,7 @@ const RankScreen = ({ navigation, route }) => {
 
       <TouchableOpacity
         style={styles.activityFab}
-        onPress={() => navigation.navigate('CreateActivity', {rank: rankData})}
+        onPress={() => navigation.navigate('CreateActivity', {rank: rankData, nickname:nickname})}
       >
         <MaterialIcons name="star" size={24} color="white" />
       </TouchableOpacity>

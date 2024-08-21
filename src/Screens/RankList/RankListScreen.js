@@ -1,29 +1,16 @@
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import TabBar from '../../Components/Base/TabBar';
 import api from '../../Utils/api';
 
 
-const RankListScreen = ({ navigation }) => {
-  const [nickname, setNickname] = useState(null);
+const RankListScreen = ({ navigation, route }) => {
+  const { nickname } = route.params || {}; 
   const [rank, setRank] = useState([]);
 
   useFocusEffect(
     React.useCallback(() => {
-      const fetchNickname = async () => {
-        try {
-          const storedNickname = await AsyncStorage.getItem('@nickname');
-          if (storedNickname !== null) {
-            
-            setNickname(storedNickname);
-          }
-        } catch (e) {
-          console.error('Error al recuperar el nombre de usuario:', e);
-        }
-      };
-
       const fetchRank = async () => {
         try {
           const objData = { nickname: nickname };
@@ -35,9 +22,7 @@ const RankListScreen = ({ navigation }) => {
         } catch (e) {
           console.error('Error al recuperar el rank del usuario:', e);
         }
-      };     
-
-      fetchNickname();
+      };
       fetchRank();
     }, [])
   );
@@ -46,7 +31,7 @@ const RankListScreen = ({ navigation }) => {
     const objData = {id:item.ranking_id};
     try{
       const ranking = await api.get('/rankings/:id', objData)
-      navigation.navigate('Rank', { rank: ranking.data });
+      navigation.navigate('Rank', { rank: ranking.data, nickname: nickname });
     }
     catch(error){
       console.log(error.message)

@@ -1,15 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TextInput, Button, Alert } from 'react-native';
 import React, { useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker'; 
-import { useFocusEffect } from '@react-navigation/native';
 import dayjs from 'dayjs';
 import TabBar from '../../Components/Base/TabBar';
 import api from '../../Utils/api';
 
-const CreateRankListScreen = ({ navigation }) => {
-  const [nickname, setNickname] = useState(null);
+const CreateRankListScreen = ({ navigation, route }) => {
+  const { nickname } = route.params || {}; 
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [fechaIni, setFechaIni] = useState(new Date());
@@ -19,21 +18,6 @@ const CreateRankListScreen = ({ navigation }) => {
   const [showDateFinPicker, setShowDateFinPicker] = useState(false);
   const [rank, setRank] = useState('');
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const fetchNickname = async () => {
-        try {
-          const storedNickname = await AsyncStorage.getItem('@nickname');
-          if (storedNickname !== null) {
-            setNickname(storedNickname);
-          }
-        } catch (e) {
-          console.error('Error al recuperar el nombre de usuario:', e);
-        }
-      };
-      fetchNickname();
-    }, [])
-  );
 
   const createObject = () => {
     if (!name.trim()) {
@@ -76,7 +60,7 @@ const CreateRankListScreen = ({ navigation }) => {
 
     setTimeout(async () => {
       await storeRank(newRank);
-      navigation.navigate('RankList');
+      navigation.navigate('RankList', {nickname:nickname});
     }, 0);
   };
 

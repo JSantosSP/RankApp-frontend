@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, Modal, Button, TouchableOpacity, FlatList } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import TabBar from '../../Components/Base/TabBar';
 import ListActivities from '../../Components/ListActivities/ListActivities';
 import dayjs from 'dayjs';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../../Utils/api';
 
 const ProfileScreen = ({ navigation, route }) => {
-  const { user, rank } = route.params || {};
-  
+  const { user, rank, dataOld, nickname } = route.params || {};
   if (!user) {
     return (
         <TabBar navigation={navigation}>      
@@ -20,42 +17,25 @@ const ProfileScreen = ({ navigation, route }) => {
         </TabBar>
     );
   }
-
-  const [activities, setActivities] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [nickname, setNickname] = useState(null);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      const fetchNickname = async () => {
-        try {
-          const storedNickname = await AsyncStorage.getItem('@nickname');
-          if (storedNickname !== null) {
-            setNickname(storedNickname);
-          }
-        } catch (e) {
-          console.error('Error al recuperar el nombre de usuario:', e);
-        }
-      };
-      fetchNickname();
-    }, [])
-  );
-
+  const [data, setData] = useState(dataOld)
+  
+  
   const handleAddActivity = async (newActivity) => {
     if (newActivity) {
       const objParams = {
-        id: rank.ranking_id,
-        nickname: user.usuario_nickname 
+        id: rank.id,
+        nickname: data.nickname 
       }
       const formData = {
-        id_activity: newActivity,//cambiar este valor para tener el id de la actividad
-        fecha: dayjs().format('YYYY-MM-DD'),
-        assignerNickname: nickname,
+        id_activity: newActivity.id,
+        nickname_juez: nickname,
+        fecha: dayjs().format('YYYY-MM-DD')
       };
       try{
         const res = await api.post('/activity/ranking/:id/users/:nickname/activites', objParams, formData)
-        //coger el res para tener el nuevo elemento y añadirlo a la lista
-        setActivities([...activities, formData]);
+        
+        setData(res.data);
         setModalVisible(false); 
       }
       catch(error){
@@ -67,12 +47,12 @@ const ProfileScreen = ({ navigation, route }) => {
   const handleRemoveActivity = async (index) => {
     try{
       const objParams = {
-        id: rank.ranking_id,
-        nickname: user.usuario_nickname, 
-        id_activity: '1'//coger el id de la lista activities usando el index
+        id: rank.id,
+        nickname: index.nickname, 
+        id_activity: index.id
       }
       const res = await api.delete('/activity/ranking/:id/users/:nickname/activites/id_activity', objParams)
-      setActivities(res.data.activities);
+      setData(res.data);
     }
     catch(error){
       console.log(error)
@@ -85,7 +65,7 @@ const ProfileScreen = ({ navigation, route }) => {
       <Text style={styles.activityDescription}>Description: {item.description}</Text>
       <Text style={styles.activityScore}>Score: {item.score}</Text>
       <Text style={styles.activityDate}>Date: {item.fecha}</Text>
-      <Text style={styles.activityAssigner}>Assigned by: {item.assignerNickname}</Text>
+      <Text style={styles.activityAssigner}>Assigned by: {item.assigned_by}</Text>
       <TouchableOpacity style={styles.deleteButton} onPress={() => handleRemoveActivity(index)}>
         <AntDesign name="delete" size={20} color="white" />
       </TouchableOpacity>
@@ -97,15 +77,15 @@ const ProfileScreen = ({ navigation, route }) => {
         <View style={styles.container}>
         <Text style={styles.title}>Profile Details</Text>
         <Text style={styles.label}>Nickname:</Text>
-        <Text style={styles.value}>{user.usuario_nickname}</Text>
+        <Text style={styles.value}>{data.nickname}</Text>
 
         <Text style={styles.label}>Points:</Text>
-        <Text style={styles.value}>{user.score}</Text>
+        <Text style={styles.value}>{data.score}</Text>
 
         <Text style={styles.label}>Activities:</Text>
-        {activities && activities.length > 0 ? (
+        {data && data.activities.length > 0 ? (
             <FlatList
-            data={activities}
+            data={data.activities}
             keyExtractor={(item, index) => index.toString()}
             renderItem={renderActivityItem}
             contentContainerStyle={styles.activitiesContainer}
