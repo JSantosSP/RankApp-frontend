@@ -1,25 +1,22 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import api from '../../Utils/api';
 
-const ListActivities = ({ onSelect }) => {
+const ListActivities = ({ onSelect, route }) => {
+  const { rank } = route.params || {};
   const [query, setQuery] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // Función que generará la lista de actividades del rank (simulada aquí)
-  const generateWordsList = () => {
-    return [
-      'john_doe', 
-      'jane_smith', 
-      'johanna', 
-      'jake', 
-      'jules', 
-      'jackson', 
-      'julie', 
-      'jerry', 
-      'joyce', 
-      'jacob'
-    ];
+  
+  const generateWordsList = async () => {
+    try {
+      const objParams = {id: rank.ranking_id}
+      const res = await api.get('activity/rankings/:id', objParams)
+      return res.data.activities
+    } catch (error) {
+      console.log(error)
+    }
   };
 
   const handleInputChange = (text) => {
@@ -29,7 +26,7 @@ const ListActivities = ({ onSelect }) => {
       const userList = generateWordsList();
       const matches = userList.filter(user =>
         user.toLowerCase().includes(text.toLowerCase())
-      ).map(user => ({ name: user }));  // Mapear a objetos con una propiedad 'name'
+      ).map(user => ({ name: user }));  
 
       if (matches.length === 0) {
         setFilteredUsers([{ name: `"${text}" (Add new)` }]);

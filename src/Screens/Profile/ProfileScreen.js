@@ -6,9 +6,10 @@ import TabBar from '../../Components/Base/TabBar';
 import ListActivities from '../../Components/ListActivities/ListActivities';
 import dayjs from 'dayjs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../../Utils/api';
 
 const ProfileScreen = ({ navigation, route }) => {
-  const { user } = route.params || {};
+  const { user, rank } = route.params || {};
   
   if (!user) {
     return (
@@ -40,22 +41,42 @@ const ProfileScreen = ({ navigation, route }) => {
     }, [])
   );
 
-  const handleAddActivity = (newActivity) => {
+  const handleAddActivity = async (newActivity) => {
     if (newActivity) {
+      const objParams = {
+        id: rank.ranking_id,
+        nickname: user.usuario_nickname 
+      }
       const formData = {
-        name: newActivity,
-        description: 'texto de ejemplo',
-        fecha: dayjs().format('DD-MM-YYYY'),
-        score: 10,
+        id_activity: newActivity,//cambiar este valor para tener el id de la actividad
+        fecha: dayjs().format('YYYY-MM-DD'),
         assignerNickname: nickname,
       };
-      setActivities([...activities, formData]);
-      setModalVisible(false);
+      try{
+        const res = await api.post('/activity/ranking/:id/users/:nickname/activites', objParams, formData)
+        //coger el res para tener el nuevo elemento y añadirlo a la lista
+        setActivities([...activities, formData]);
+        setModalVisible(false); 
+      }
+      catch(error){
+        console.log(error)
+      }
     }
   };
 
-  const handleRemoveActivity = (index) => {
-    setActivities(activities.filter((_, i) => i !== index));
+  const handleRemoveActivity = async (index) => {
+    try{
+      const objParams = {
+        id: rank.ranking_id,
+        nickname: user.usuario_nickname, 
+        id_activity: '1'//coger el id de la lista activities usando el index
+      }
+      const res = await api.delete('/activity/ranking/:id/users/:nickname/activites/id_activity', objParams)
+      setActivities(res.data.activities);
+    }
+    catch(error){
+      console.log(error)
+    }
   };
 
   const renderActivityItem = ({ item, index }) => (
@@ -76,10 +97,10 @@ const ProfileScreen = ({ navigation, route }) => {
         <View style={styles.container}>
         <Text style={styles.title}>Profile Details</Text>
         <Text style={styles.label}>Nickname:</Text>
-        <Text style={styles.value}>{user.name}</Text>
+        <Text style={styles.value}>{user.usuario_nickname}</Text>
 
         <Text style={styles.label}>Points:</Text>
-        <Text style={styles.value}>{user.points}</Text>
+        <Text style={styles.value}>{user.score}</Text>
 
         <Text style={styles.label}>Activities:</Text>
         {activities && activities.length > 0 ? (
@@ -105,7 +126,7 @@ const ProfileScreen = ({ navigation, route }) => {
             <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
                 <Text style={styles.modalTitle}>Add Activity</Text>
-                <ListActivities onSelect={handleAddActivity}/>
+                <ListActivities onSelect={handleAddActivity} rank = {rank}/>
                 <Button title="Cancel" onPress={() => setModalVisible(false)} color="#cd0000" />
             </View>
             </View>

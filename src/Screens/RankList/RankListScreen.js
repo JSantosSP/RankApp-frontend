@@ -16,7 +16,7 @@ const RankListScreen = ({ navigation }) => {
         try {
           const storedNickname = await AsyncStorage.getItem('@nickname');
           if (storedNickname !== null) {
-            console.log(nickname)
+            
             setNickname(storedNickname);
           }
         } catch (e) {

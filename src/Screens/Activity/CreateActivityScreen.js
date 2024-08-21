@@ -1,20 +1,33 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import Slider from '@react-native-community/slider';
+import api from '../../Utils/api';
 
-const CreateActivityScreen = ({ navigation }) => {
+const CreateActivityScreen = ({ navigation, route }) => {
+  const { rank } = route.params || {};
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [score, setScore] = useState(50);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name || !description) {
       Alert.alert('Error', 'Please fill out all fields.');
       return;
     }
-
-    Alert.alert('Success', `Activity Created\nName: ${name}\nDescription: ${description}\nScore: ${score}`);
-    navigation.goBack();
+    try{
+      const objBody = {
+        name: name,
+				description: description,
+				score: score,
+				id_rank: rank.ranking_id
+      }
+      const res = await api.post('/activity', null, objBody)
+      Alert.alert('Success', res.data);
+      navigation.goBack();
+    }
+    catch(err){
+      console.log(err)
+    }
   };
 
   return (

@@ -6,7 +6,7 @@ import api from '../../Utils/api';
 
 const RankScreen = ({ navigation, route }) => {
   const { rank } = route.params || {}; 
-  const [rankData, setRankData] = useState(rank || {}); // Usar estado para manejar los datos del ranking
+  const [rankData, setRankData] = useState(rank || {});
   const [modalVisible, setModalVisible] = useState(false);
   const [newNickname, setNewNickname] = useState('');
 
@@ -65,7 +65,7 @@ const RankScreen = ({ navigation, route }) => {
   );
 
   const handleParticipantPress = (user) => {
-    navigation.navigate('Profile', { user: user });
+    navigation.navigate('Profile', { user: user, rank: rankData });
   };
 
   return (
@@ -93,7 +93,7 @@ const RankScreen = ({ navigation, route }) => {
 
       <TouchableOpacity
         style={styles.activityFab}
-        onPress={() => navigation.navigate('CreateActivity')}
+        onPress={() => navigation.navigate('CreateActivity', {rank: rankData})}
       >
         <MaterialIcons name="star" size={24} color="white" />
       </TouchableOpacity>
