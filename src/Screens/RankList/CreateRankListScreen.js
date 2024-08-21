@@ -1,14 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TextInput, Button, Alert } from 'react-native';
+import { StyleSheet, Text, TextInput, Button, Alert, View } from 'react-native';
 import React, { useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker'; 
 import dayjs from 'dayjs';
-import TabBar from '../../Components/Base/TabBar';
 import api from '../../Utils/api';
 
 const CreateRankListScreen = ({ navigation, route }) => {
   const { nickname } = route.params || {}; 
-
+  
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [fechaIni, setFechaIni] = useState(new Date());
@@ -67,8 +66,12 @@ const CreateRankListScreen = ({ navigation, route }) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      padding: 20,
       backgroundColor: '#fff',
+    },
+    content: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     input: {
       height: 40,
@@ -96,7 +99,9 @@ const CreateRankListScreen = ({ navigation, route }) => {
   });
 
   return (
-    <TabBar navigation={navigation}>
+  <View style={styles.container}>
+      
+    <View style={styles.content}>
       <Text style={styles.label}>Name</Text>
       <TextInput
         style={styles.input}
@@ -167,7 +172,8 @@ const CreateRankListScreen = ({ navigation, route }) => {
 
       <Button title="Create" onPress={handleCreate} color="#007AFF" />
       <StatusBar style="auto" />
-    </TabBar>
+    </View>
+  </View>
   );
 };
 

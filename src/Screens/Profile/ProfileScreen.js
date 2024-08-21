@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, Button, TouchableOpacity, FlatList } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
-import TabBar from '../../Components/Base/TabBar';
 import ListActivities from '../../Components/ListActivities/ListActivities';
 import dayjs from 'dayjs';
 import api from '../../Utils/api';
@@ -10,11 +9,11 @@ const ProfileScreen = ({ navigation, route }) => {
   const { user, rank, dataOld, nickname } = route.params || {};
   if (!user) {
     return (
-        <TabBar navigation={navigation}>      
+        <View>      
             <View style={styles.container}>
                 <Text style={styles.errorText}>No user data available.</Text>
             </View>
-        </TabBar>
+        </View>
     );
   }
   const [modalVisible, setModalVisible] = useState(false);
@@ -33,7 +32,7 @@ const ProfileScreen = ({ navigation, route }) => {
         fecha: dayjs().format('YYYY-MM-DD')
       };
       try{
-        const res = await api.post('/activity/ranking/:id/users/:nickname/activites', objParams, formData)
+        const res = await api.post('/rankings/:id/users/:nickname/activities', objParams, formData)
         
         setData(res.data);
         setModalVisible(false); 
@@ -48,10 +47,10 @@ const ProfileScreen = ({ navigation, route }) => {
     try{
       const objParams = {
         id: rank.id,
-        nickname: index.nickname, 
+        nickname: data.nickname, 
         id_activity: index.id
       }
-      const res = await api.delete('/activity/ranking/:id/users/:nickname/activites/id_activity', objParams)
+      const res = await api.delete('/rankings/:id/users/:nickname/activities/:id_activity', objParams)
       setData(res.data);
     }
     catch(error){
@@ -66,15 +65,17 @@ const ProfileScreen = ({ navigation, route }) => {
       <Text style={styles.activityScore}>Score: {item.score}</Text>
       <Text style={styles.activityDate}>Date: {item.fecha}</Text>
       <Text style={styles.activityAssigner}>Assigned by: {item.assigned_by}</Text>
-      <TouchableOpacity style={styles.deleteButton} onPress={() => handleRemoveActivity(index)}>
+      <TouchableOpacity style={styles.deleteButton} onPress={() => handleRemoveActivity(item)}>
         <AntDesign name="delete" size={20} color="white" />
       </TouchableOpacity>
     </View>
   );
 
   return (
-    <TabBar navigation={navigation}>
-        <View style={styles.container}>
+    <View style={styles.container}>
+  
+      <View style={styles.content}>
+        <View style={styles.container2}>
         <Text style={styles.title}>Profile Details</Text>
         <Text style={styles.label}>Nickname:</Text>
         <Text style={styles.value}>{data.nickname}</Text>
@@ -106,17 +107,27 @@ const ProfileScreen = ({ navigation, route }) => {
             <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
                 <Text style={styles.modalTitle}>Add Activity</Text>
-                <ListActivities onSelect={handleAddActivity} rank = {rank}/>
+                <ListActivities onSelect={handleAddActivity} rank = {rank} nickname = {nickname}/>
                 <Button title="Cancel" onPress={() => setModalVisible(false)} color="#cd0000" />
             </View>
             </View>
         </Modal>
-    </TabBar>
+    </View>
+  </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  content: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  container2: {
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',

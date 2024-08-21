@@ -3,12 +3,12 @@ import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { AntDesign } from '@expo/vector-icons';
 
-const TabBar = ({ navigation, children }) => {
+const TabBar = ({ navigation, children, route }) => {
   const [activeKey, setActiveKey] = useState('RankList');
 
   const handlePage = (page) => {
     setActiveKey(page);
-    navigation.navigate(page);
+    navigation.navigate(page, route);
   };
 
   const styles = StyleSheet.create({
@@ -51,20 +51,10 @@ const TabBar = ({ navigation, children }) => {
       icon: 'bars',
     },
     {
-      key: 'Rank',
-      title: 'Rank',
-      icon: 'home',
-    },
-    {
       key: 'CreateRank',
       title: 'New Rank',
       icon: 'pluscircleo',
-    },
-    {
-      key: 'Profile',
-      title: 'Profile',
-      icon: 'user',
-    },
+    }
   ];
 
   return (

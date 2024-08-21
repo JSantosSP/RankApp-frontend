@@ -19,10 +19,10 @@ const CreateActivityScreen = ({ navigation, route }) => {
         name: name,
 				description: description,
 				score: score,
-				id_rank: rank.ranking_id
+				id_rank: rank.id
       }
       const res = await api.post('/activity', null, objBody)
-      Alert.alert('Success', res.data);
+      Alert.alert('Success', JSON.stringify(res.data));
       navigation.goBack();
     }
     catch(err){
@@ -31,7 +31,10 @@ const CreateActivityScreen = ({ navigation, route }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+  <View style={styles.container}>
+      
+  <View style={styles.content}>
+    <ScrollView contentContainerStyle={styles.container2}>
       <Text style={styles.title}>Create New Activity</Text>
 
       <View style={styles.formGroup}>
@@ -76,11 +79,22 @@ const CreateActivityScreen = ({ navigation, route }) => {
         <Text style={styles.submitButtonText}>Create Activity</Text>
       </TouchableOpacity>
     </ScrollView>
+  </View>
+  </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  content: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  container2: {
     flexGrow: 1,
     padding: 20,
     backgroundColor: '#fff',

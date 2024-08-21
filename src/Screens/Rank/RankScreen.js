@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Modal, TextInput, Alert, Button, TouchableOpacity, FlatList } from 'react-native';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
-import TabBar from '../../Components/Base/TabBar';
+
 import api from '../../Utils/api';
 
 const RankScreen = ({ navigation, route }) => {
@@ -12,11 +12,11 @@ const RankScreen = ({ navigation, route }) => {
 
   if (!rankData) {
     return (
-      <TabBar navigation={navigation}>      
+      <View>      
         <View style={styles.container}>
           <Text style={styles.errorText}>No rank data available.</Text>
         </View>
-      </TabBar>
+      </View>
     );
   }
 
@@ -91,7 +91,8 @@ const RankScreen = ({ navigation, route }) => {
   };
 
   return (
-    <TabBar navigation={navigation}>
+  <View style={styles.container}>
+    <View style={styles.content}>
       <FlatList
         data={rankData.users}
         ListHeaderComponent={renderHeader}
@@ -106,7 +107,7 @@ const RankScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         )}
         ListEmptyComponent={<Text style={styles.value}>No participants added</Text>}
-        contentContainerStyle={styles.container}
+        contentContainerStyle={styles.container2}
       />
 
       <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
@@ -140,12 +141,22 @@ const RankScreen = ({ navigation, route }) => {
           </View>
         </View>
       </Modal>
-    </TabBar>
+    </View>
+  </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  content: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  container2: {
     flexGrow: 1,
     padding: 20,
     backgroundColor: '#fff',

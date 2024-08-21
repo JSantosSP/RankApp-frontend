@@ -3,8 +3,7 @@ import { View, TextInput, Text, TouchableOpacity, FlatList, StyleSheet } from 'r
 import api from '../../Utils/api';
 import { useFocusEffect } from '@react-navigation/native';
 
-const ListActivities = ({ onSelect, route }) => {
-  const { rank } = route.params || {};
+const ListActivities = ({ onSelect, rank, nickname }) => {
   const [query, setQuery] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [activitiesList, setActivitiesList] = useState([]);
@@ -16,9 +15,10 @@ const ListActivities = ({ onSelect, route }) => {
     React.useCallback(() => {
       const generateWordsList = async () => {
         try {
-          const objParams = {id: rank.ranking_id}
+          const objParams = {id: rank.id}
+          
           const res = await api.get('activity/rankings/:id', objParams)
-          setActivitiesList(res.data.activities)
+          setActivitiesList(res.data)
         } catch (error) {
           console.log(error)
         }
