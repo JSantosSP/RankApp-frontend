@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Configuración de Axios
 const apiClient = axios.create({
-  baseURL: 'http://10.0.2.2:4000/api/',
+  baseURL: 'https://rankapp-backend.onrender.com/api/',
   headers: {
     'Content-Type': 'application/json',
   },
