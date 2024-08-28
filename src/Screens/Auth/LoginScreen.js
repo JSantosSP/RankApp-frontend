@@ -1,32 +1,40 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Button, Text, View, TextInput } from 'react-native';
-import React, { useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StyleSheet, View, Button, Text, TextInput, Alert } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import api from '../../Utils/api';
 
 const LoginScreen = ({ navigation }) => {
-  const [username, setUsername] = useState('');
+  const [nickname, setNickname] = useState('');
 
-  const storeUsername = async (username) => {
+  
+  
+
+  
+  const storeNickname = async (nickname) => {
     try {
-      //añadir codigo para comprobar que es el unico nickname en la base de datos
-      await AsyncStorage.setItem('@username', username);
+      const objData = { nickname: nickname };
+      const searchResult = await api.get('/users/:nickname', objData)
+      if (searchResult.message !== "User not found") {
+        setNickname(nickname)
+      } else {
+        const createUserResponse = await api.post('/users/',null, objData);
+        setNickname(createUserResponse.data.nickname)
+      }
+      return true;
     } catch (e) {
       console.error('Error al guardar el nombre de usuario:', e);
+      return false;
     }
   };
 
+  
   const handlePage = async () => {
-    await storeUsername(username); 
-    navigation.navigate('Home');
+    const success = await storeNickname(nickname);
+    if (success) {
+      navigation.navigate('RankList', { nickname: nickname });
+    }
   };
 
   const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
     input: {
       height: 40,
       borderColor: 'gray',
@@ -38,18 +46,17 @@ const LoginScreen = ({ navigation }) => {
   });
 
   return (
-    <View style={styles.container}>
+    <View>
       <Text>Login Screen</Text>
-      
+
       <TextInput
         style={styles.input}
         placeholder="Ingresa tu nombre de usuario"
-        value={username}
-        onChangeText={setUsername}
+        value={nickname}
+        onChangeText={setNickname}
       />
 
-      <Button title="Go to Home" onPress={handlePage} />
-      <StatusBar style="auto" />
+      <Button title="Create User" onPress={handlePage} />
     </View>
   );
 };
